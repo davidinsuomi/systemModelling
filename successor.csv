@@ -1,0 +1,9 @@
+start,0,A,B
+A,4,D,C
+B,5,E
+C,5,E
+D,6,F
+E,5,G
+F,4,end
+G,5,end
+end,0
