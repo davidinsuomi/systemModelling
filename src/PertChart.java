@@ -1,28 +1,19 @@
 import java.io.BufferedReader;
-import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.List;
+
+
 
 
 public class PertChart {
-	private List<Task> taskList;
+	private static int MAXTASK=100;
+	private int taskCount;	
+	private Task[] tasks= new Task[MAXTASK];
 	
-	PertChart(){
-		taskList  = new ArrayList<>();
-	}
-	public void calculateCriticalPath()
-	{
-		
-	}
-	
-	public void readFile(String fileLocation)
-	{
+	public void readFile(String fileLocation){
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(fileLocation));
 			String line;
+			taskCount=0;
 			while ((line = br.readLine()) != null) {
 				Task task = new Task();
 				String[] lineWithoutComma = line.split(",");
@@ -30,59 +21,74 @@ public class PertChart {
 				task.setTaskName(lineWithoutComma[0]); 
 				//add duration
 				task.setDuration(Integer.parseInt(lineWithoutComma[1]));
+				//System.out.println(lineWithoutComma.length);
 				if(lineWithoutComma.length > 2){
-					List<String> precedenceTaskName = new ArrayList<>();
+					task.setPredecessor(new Task[lineWithoutComma.length-2]);
 					for (int i = 2; i < lineWithoutComma.length; i++) {
-						precedenceTaskName.add(lineWithoutComma[i]);
+					Task aux = new Task();
+					aux = aux.CheckTask(tasks, lineWithoutComma[i], taskCount);
+					if(aux != null){
+						//System.out.println("precessor name : "+aux.getTaskName());
+						task.getPredecessor()[i-2] = aux;
+						tasks[aux.GetPosition(tasks, aux, taskCount)] = aux.AddSuccessor(task);
 					}
-				task.setPrecedenceTaskName(precedenceTaskName);
-				}
-	
-			taskList.add(task);
-			}
-			br.close();
-		} catch (Exception e) {
-			// TODO: handle exception
-			System.out.print("exception run");
-		}
-	}
-	
-	public void generateDot( )
-	{
-		String fileLocation = "F:\\Dropbox\\tartu\\modeling\\pertchart.dot";
-		PrintStream out = null;
-		try {
-			out = new PrintStream(new FileOutputStream(fileLocation));
-		    out.print("digraph myPERT {");
-		    for (Task task : taskList) {
-		    	String format= task.getTaskName() + "[shape=polygon, sides=4, style=\"bold\", color=\"black\",label=\"" + task.getTaskName()+"(" + task.getDuration() +" days)\"]";
-		    	out.println(format);
-		    	
-			}
-		    for (Task task : taskList) {
-				if(task.getPrecedenceTaskName().isEmpty()==false){
-					for (int i = 0; i < task.getPrecedenceTaskName().size(); i++) {
-						String format = task.getTaskName() +"->" + task.getPrecedenceTaskName().get(i) +"[label=\"\"]" ;
-						out.println(format);
+					else{
+						 throw new Exception("file format error, no predecessor found");
 					}
+					
 				}
-
+				}
+				tasks[taskCount] = task;
+				taskCount++;
 			}
-		    out.println("}");
 			
 		} catch (Exception e) {
 			// TODO: handle exception
-		}
-		finally {
-		    if (out != null) out.close();
+			 System.out.print("exception run");
 		}
 	}
-	public void printChart(){
-		for (Task task : taskList) {
-			System.out.print(task.getTaskName());
-			System.out.print(task.getDuration());
-			System.out.println("");
+	
+	public void CalculateEarlyStartAndEarlyFinish(){
+		tasks[0].setEarlyFinsh(tasks[0].getDuration()+tasks[0].getEarlyStart());
+		for (int i = 1; i < this.taskCount; i++) {
+			for( Task task : tasks[i].getPredecessor()){
+				if(tasks[i].getEarlyStart() < task.getEarlyFinsh()){
+					tasks[i].setEarlyStart(task.getEarlyFinsh());
+				}
+				tasks[i].setEarlyFinsh(tasks[i].getEarlyStart() + tasks[i].getDuration());
+			}
+			
+		}
+	}
+	public void CalculateLateStartAndLateFinish(){
+		tasks[taskCount -1].setLateFinsh(tasks[taskCount -1].getEarlyFinsh());
+		tasks[taskCount -1].setLateStart(tasks[taskCount -1].getLateFinsh()-tasks[taskCount -1].getDuration());
+		for (int i = taskCount -2 ; i >= 0 ; i--) {
+			for(Task task : tasks[i].getSuccessor()){
+				if(tasks[i].getLateFinsh() == 0){
+					tasks[i].setLateFinsh(task.getLateStart());
+				}
+				else{
+					if(tasks[i].getLateFinsh() > task.getLateStart()){
+						tasks[i].setLateFinsh(task.getLateStart());
+					}
+				}
+			}
+			tasks[i].setLateStart(tasks[i].getLateFinsh() + tasks[i].getDuration());
 		}
 		
 	}
+	
+	public void CalculateCriticalPath(){
+		
+		for(int i=0 ; i < taskCount ; i++){
+			Task task = new Task();
+			 task = tasks[i];
+			if((task.getEarlyFinsh() - task.getLateFinsh() == 0)&& (task.getLateStart() - task.getEarlyStart()==0)){
+				System.out.print(task.getTaskName() + " ");
+			}
+		}
+	}
+	
+	
 }
