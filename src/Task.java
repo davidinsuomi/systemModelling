@@ -6,10 +6,17 @@ public class Task {
 	private int earlyFinsh=0;
 	private int lateStart=0;
 	private int lateFinsh=0;
+	private boolean criticalPath= false;  //default is false
 	private Task[] successor;
 	private Task[] predecessor;
 	
 	
+	public boolean isCriticalPath() {
+		return criticalPath;
+	}
+	public void setCriticalPath(boolean criticalPath) {
+		this.criticalPath = criticalPath;
+	}
 	public String getTaskName() {
 		return taskName;
 	}

@@ -8,8 +8,10 @@ public class runTest {
 		pertChart.readFile("F:\\Dropbox\\tartu\\modeling\\pert.csv");
 		pertChart.CalculateEarlyStartAndEarlyFinish();
 		pertChart.CalculateLateStartAndLateFinish();
+		System.out.print("Critical Path: ");
 		pertChart.CalculateCriticalPath();
-		System.out.print("");
+		pertChart.GenetateDot();
+		System.out.println("");
 	}
 	
 

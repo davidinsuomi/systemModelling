@@ -1,5 +1,7 @@
 import java.io.BufferedReader;
+import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.PrintStream;
 
 
 
@@ -74,21 +76,79 @@ public class PertChart {
 					}
 				}
 			}
-			tasks[i].setLateStart(tasks[i].getLateFinsh() + tasks[i].getDuration());
+			tasks[i].setLateStart(tasks[i].getLateFinsh()  - tasks[i].getDuration());
 		}
 		
 	}
 	
 	public void CalculateCriticalPath(){
+		// start and end part set to true;
+		tasks[0].setCriticalPath(true);
+		tasks[taskCount-1].setCriticalPath(true);
 		
-		for(int i=0 ; i < taskCount ; i++){
+		System.out.print(tasks[0].getTaskName() + " ");
+		
+		for(int i=0 ; i < taskCount -1  ; i++){
 			Task task = new Task();
 			 task = tasks[i];
 			if((task.getEarlyFinsh() - task.getLateFinsh() == 0)&& (task.getLateStart() - task.getEarlyStart()==0)){
+				tasks[i].setCriticalPath(true);
 				System.out.print(task.getTaskName() + " ");
 			}
 		}
+		System.out.print(tasks[taskCount-1].getTaskName() + " ");
 	}
 	
+	
+	
+	public void GenetateDot(){
+		String fileLocation = "F:\\Dropbox\\tartu\\modeling\\pertchart.dot";
+        PrintStream out = null;
+        try {
+        	out= new PrintStream(new FileOutputStream(fileLocation));
+        	out.print("digraph myPERT {");
+        	for(int i=0 ; i < taskCount   ; i++){
+    			Task task = new Task();
+    			 task = tasks[i];
+    			 String formatOne,formatTwo,formatThree;
+    			 formatOne = task.getTaskName() + "[shape=polygon, sides=4, style=\"bold\",label=\"" + task.getTaskName()+"(" + task.getDuration() +" days)\",";
+    			 if (task.isCriticalPath()){
+    				 formatTwo = "color=\"red\"]";
+    			 }
+    			 else 
+    				 formatTwo = "color=\"black\"]";
+    			 formatThree= formatOne + formatTwo;
+    			 out.println(formatThree);
+    			// System.out.println(formatThree);
+    		}
+        	for(int i=0 ; i < taskCount -1  ; i++){
+        		Task task = new Task();
+   			 	task = tasks[i];
+   			 	if(task.getSuccessor() != null){
+   			 		for (int j = 0; j < task.getSuccessor().length; j++) {
+   			 			String formatOne, formatTwo,formatThree;
+   			 			formatOne= task.getTaskName() +"->" + task.getSuccessor()[j].getTaskName();
+   			 			if(task.isCriticalPath() && task.getSuccessor()[j].isCriticalPath()){
+   			 				formatTwo= "[label=\"\", style=\"bold\", color=\"red\"]"; 			
+   			 			}
+   			 			else {
+   			 				formatTwo = "[label=\"\"]";
+   			 			}
+						formatThree= formatOne + formatTwo;
+						out.println(formatThree);
+						//System.out.println(formatThree);
+					}
+   			 	}
+        	}
+        	out.println("}");
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+        finally {
+            if (out != null) out.close();
+        }
+		
+	}
 	
 }
