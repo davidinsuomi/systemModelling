@@ -102,7 +102,9 @@ public class PertChart {
 	
 	
 	public void GenetateDot(){
-		String fileLocation = "F:\\Dropbox\\tartu\\modeling\\pertchart.dot";
+		
+		String workingDir = System.getProperty("user.dir");
+		String fileLocation = workingDir + "\\pertchart.dot";
         PrintStream out = null;
         try {
         	out= new PrintStream(new FileOutputStream(fileLocation));
