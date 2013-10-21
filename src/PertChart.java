@@ -86,7 +86,7 @@ public class PertChart {
 		tasks[0].setCriticalPath(true);
 		tasks[taskCount-1].setCriticalPath(true);
 		
-		System.out.print(tasks[0].getTaskName() + " ");
+		//System.out.print(tasks[0].getTaskName() + " ");
 		
 		for(int i=0 ; i < taskCount -1  ; i++){
 			Task task = new Task();
@@ -101,10 +101,10 @@ public class PertChart {
 	
 	
 	
-	public void GenetateDot(){
+	public void GenetateDot(String filename){
 		
 		String workingDir = System.getProperty("user.dir");
-		String fileLocation = workingDir + "\\pertchart.dot";
+		String fileLocation = workingDir + "\\" + filename;
 		System.out.println();
 		System.out.println("the dot file location is :" + fileLocation);
         PrintStream out = null;
