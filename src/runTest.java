@@ -5,7 +5,9 @@ public class runTest {
 
 	public static void main(String[] args) {
 		PertChart pertChart = new PertChart();
-		pertChart.readFile("C:\\Users\\david\\Desktop\\pert.csv");	
+		
+		//String input = "C:\\Users\\david\\Desktop\\123.csv";
+		//String output = "C:\\Users\\david\\Desktop\\out.pert";
 		if(args.length ==2 ){
 		pertChart.readFile(args[0]);
 		pertChart.CalculateEarlyStartAndEarlyFinish();
@@ -16,7 +18,8 @@ public class runTest {
 		System.out.println("");
 		}
 		else{
-			 System.out.print("usage java -jar myApplication.jar pert.csv(pert file name) NameOfPERTFile.pert(name of the out put)");
+			 System.out.println("usage:");
+			 System.out.print("java -jar myApplication.jar pert.csv(pert file name) NameOfPERTFile.pert(name of the out put)");
 		}
 		
 	}
