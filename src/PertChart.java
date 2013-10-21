@@ -105,6 +105,8 @@ public class PertChart {
 		
 		String workingDir = System.getProperty("user.dir");
 		String fileLocation = workingDir + "\\pertchart.dot";
+		System.out.println();
+		System.out.println("the dot file location is :" + fileLocation);
         PrintStream out = null;
         try {
         	out= new PrintStream(new FileOutputStream(fileLocation));
